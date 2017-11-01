@@ -4,6 +4,12 @@ local ltn12 = require "ltn12"
 
 local GoogleAPI = { access_token =  ""}
 
+function GoogleAPI.auth_url(client_id, redirect_uri)
+  return "https://accounts.google.com/o/oauth2/v2/auth?client_id=" .. client_id ..
+         "&redirect_uri=" .. ngx.escape_uri(redirect_uri) .. "&scope=https://www.googleapis.com/auth/userinfo.email" ..
+         "&response_type=code"
+end
+
 function GoogleAPI.token(code, client_id, client_secret, redirect_uri)
   local response_body = { }
   local payload = "code=" .. code .. "&client_id=" .. client_id ..

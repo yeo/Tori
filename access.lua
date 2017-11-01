@@ -11,13 +11,6 @@ local str = require "resty.string"
 local req_get_headers = ngx.req.get_headers
 local req_get_args = ngx.req.get_uri_args
 
-local function build_urls(conf)
-  -- TODO: Improve by checking params for redirect_uri
-  return "https://accounts.google.com/o/oauth2/v2/auth?client_id=" .. conf.client_id ..
-         "&redirect_uri=" .. ngx.escape_uri(conf.redirect_uri) .. "&scope=https://www.googleapis.com/auth/userinfo.email" ..
-         "&response_type=code"
-end
-
 -- TODO: May need to rewrite this with C binding for performance reason
 local function hex_to_binary(hex)
   return pcall(function ()
@@ -90,7 +83,7 @@ function _M.execute(conf)
 
   -- no cookie, no api key, trigger oauth2 flow
   if not req_get_args()["code"] then
-    return ngx.redirect(build_urls(conf))
+    return ngx.redirect(google_api.auth_url(conf.client_id, conf.redirect))
   end
 
   -- trigger email exchange if we pass code over
